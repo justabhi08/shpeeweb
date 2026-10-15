@@ -1,7 +1,7 @@
 export const paymentConfig = {
   payeeName: "BABY KUMARI",
   upiApp: "PhonePe",
-  upiId: "",
+  upiId: "9771051172@axl",
   qrImage: "/images/payment/phonepe-qr.png",
   methods: [
     {
