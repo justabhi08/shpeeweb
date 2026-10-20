@@ -19,6 +19,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <script dangerouslySetInnerHTML={{ __html: "if(location.pathname!='/account' && /^#(confirmation_token|recovery_token|invite_token|access_token)=/.test(location.hash)){location.replace('/account'+location.hash)}" }} />
         <StoreProvider>
           <SiteHeader />
           {children}

@@ -56,9 +56,10 @@ export function CheckoutView() {
       <div className="order-success">
         <CheckCircle2 size={60} />
         <h1>Thank you for your order!</h1>
-        <p>Your order has been placed successfully.</p>
+        <p>Your order is confirmed.</p>
         <div><span>Order number</span><strong>{completedOrder}</strong></div>
         <p>Keep this order number and your email address to track the order.</p>
+        <p>{paymentMethodLabel === "PhonePe UPI" ? "Payment is pending manual verification." : "Payment is due on delivery."}</p>
         <p className="order-success-note">Payment method: <strong>{paymentMethodLabel}</strong></p>
         <Link href="/track-order" className="primary-button">Track your order</Link>
         <Link href="/products" className="outline-button">Continue shopping</Link>

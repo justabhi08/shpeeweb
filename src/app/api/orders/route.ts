@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const items: OrderLine[] = rawItems.flatMap((raw) => {
       const item = raw as { productId?: unknown; quantity?: unknown };
       const product = getProduct(Number(item.productId));
-      const quantity = Math.min(20, Math.max(1, Number(item.quantity) || 1));
+      const quantity = Math.min(20, Math.max(1, Math.floor(Number(item.quantity) || 1)));
       return product ? [{ productId: product.Id, name: product.PName, image: product.ProductImage, quantity, price: product.DP }] : [];
     });
     if (!items.length) return NextResponse.json({ message: "Your cart is empty." }, { status: 400 });
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     }
 
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const orderNumber = `SKY${Date.now().toString().slice(-9)}${Math.floor(Math.random() * 90 + 10)}`;
+    const orderNumber = `SKY${crypto.randomUUID().replaceAll("-", "").slice(0, 16).toUpperCase()}`;
     const [order] = await db.insert(orders).values({
       orderNumber,
       customerName,
@@ -48,9 +48,12 @@ export async function POST(request: Request) {
       total: total.toFixed(2),
       paymentMethod,
       paymentReference,
-    }).returning({ orderNumber: orders.orderNumber, status: orders.status });
+      status: "Confirmed",
+      paymentStatus: paymentMethod === "PhonePe UPI" ? "Pending verification" : "Due on delivery",
+      history: [{ status: "Confirmed", note: "Order confirmed", at: new Date().toISOString() }],
+    }).returning();
 
-    return NextResponse.json({ message: "Order placed successfully.", order });
+    return NextResponse.json({ message: "Order confirmed.", order: { orderNumber: order.orderNumber, status: order.status } });
   } catch (error) {
     console.error("Order placement error", error);
     return NextResponse.json({ message: "Unable to place your order right now." }, { status: 500 });
