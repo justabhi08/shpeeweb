@@ -20,10 +20,15 @@ export async function GET(request: Request) {
       paymentMethod: orders.paymentMethod,
       paymentReference: orders.paymentReference,
       createdAt: orders.createdAt,
+      paymentStatus: orders.paymentStatus,
+      courier: orders.courier,
+      trackingNumber: orders.trackingNumber,
+      estimatedDelivery: orders.estimatedDelivery,
+      history: orders.history,
     }).from(orders).where(and(eq(orders.orderNumber, orderNumber), eq(orders.email, email))).limit(1);
 
     if (!order) return NextResponse.json({ message: "No matching order was found." }, { status: 404 });
-    return NextResponse.json({ order });
+    return NextResponse.json({ order }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Order tracking error", error);
     return NextResponse.json({ message: "Unable to track the order right now." }, { status: 500 });

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Check, PackageCheck, Search } from "lucide-react";
+import { PackageCheck, Search } from "lucide-react";
 import { formatPrice } from "@/data/catalog";
+import { OrderCard, type OrderDetails } from "./order-card";
 import type { OrderLine } from "@/db/schema";
 
-type TrackedOrder = {
+type TrackedOrder = OrderDetails & {
   orderNumber: string;
   customerName: string;
   total: string;
@@ -56,13 +57,7 @@ export function TrackOrderView() {
       {order ? (
         <div className="tracking-result">
           <div className="tracking-result-head"><div><span>Order</span><h3>{order.orderNumber}</h3></div><b>{order.status}</b></div>
-          <div className="status-progress">
-            {["Order placed", "Processing", "Shipped", "Delivered"].map((status, index) => (
-              <div className={index === 0 || order.status.toLowerCase().includes(status.toLowerCase()) ? "active" : ""} key={status}>
-                <span><Check size={14} /></span><p>{status}</p>
-              </div>
-            ))}
-          </div>
+          <OrderCard order={order} />
           <p>Placed on {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</p>
           <div className="tracked-items">
             {order.items.map((item) => (
